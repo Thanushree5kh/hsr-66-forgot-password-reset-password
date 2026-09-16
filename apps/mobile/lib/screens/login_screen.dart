@@ -15,7 +15,14 @@ class LoginScreen extends StatelessWidget {
             const TextField(decoration: InputDecoration(labelText: 'Email')),
             const SizedBox(height: 12),
             const TextField(decoration: InputDecoration(labelText: 'Password'), obscureText: true),
-            const SizedBox(height: 24),
+            Align(
+              alignment: Alignment.centerRight,
+              child: TextButton(
+                onPressed: () => context.push('/forgot-password'),
+                child: const Text('Forgot password?'),
+              ),
+            ),
+            const SizedBox(height: 12),
             FilledButton(
               onPressed: () => context.go('/dashboard'),
               child: const Text('Log in'),
