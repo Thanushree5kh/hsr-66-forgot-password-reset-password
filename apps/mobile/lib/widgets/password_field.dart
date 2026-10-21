@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../theme/theme.dart';
 
 class PasswordField extends StatefulWidget {
   const PasswordField({
@@ -40,17 +41,26 @@ class _PasswordFieldState extends State<PasswordField> {
       textInputAction: widget.textInputAction,
       onChanged: widget.onChanged,
       onFieldSubmitted: widget.onFieldSubmitted,
+      style: const TextStyle(
+        color: AppColors.textPrimary,
+        fontSize: 15,
+        fontWeight: FontWeight.w500,
+      ),
       decoration: InputDecoration(
         labelText: widget.labelText,
         hintText: widget.hintText,
         errorText: widget.errorText,
         helperText: widget.helperText,
-        prefixIcon: const Icon(Icons.lock_outline_rounded),
+        prefixIcon: const Icon(
+          Icons.lock_outline_rounded,
+          color: AppColors.softBlue,
+        ),
         suffixIcon: IconButton(
           icon: Icon(
             _obscureText
                 ? Icons.visibility_outlined
                 : Icons.visibility_off_outlined,
+            color: AppColors.textSecondary,
           ),
           tooltip: _obscureText ? 'Show password' : 'Hide password',
           onPressed: () {
@@ -59,19 +69,20 @@ class _PasswordFieldState extends State<PasswordField> {
             });
           },
         ),
+        filled: true,
+        fillColor: Colors.white,
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(16),
+          borderSide: const BorderSide(color: AppColors.inputBorder),
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(
-            color: Theme.of(context).colorScheme.outlineVariant,
-          ),
+          borderRadius: BorderRadius.circular(16),
+          borderSide: const BorderSide(color: AppColors.inputBorder),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(
-            color: Theme.of(context).colorScheme.primary,
+          borderRadius: BorderRadius.circular(16),
+          borderSide: const BorderSide(
+            color: AppColors.softBlue,
             width: 2,
           ),
         ),

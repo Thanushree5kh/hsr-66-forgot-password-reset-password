@@ -10,20 +10,24 @@ class ApiClient {
 
   static Dio _build() {
     final base = dotenv.env['API_BASE_URL'] ?? 'http://10.0.2.2:4000/api';
-    final dio = Dio(BaseOptions(
-      baseUrl: base,
-      connectTimeout: const Duration(seconds: 15),
-      receiveTimeout: const Duration(seconds: 15),
-    ));
-    dio.interceptors.add(InterceptorsWrapper(
-      onRequest: (options, handler) async {
-        final token = await _storage.read(key: 'accessToken');
-        if (token != null) {
-          options.headers['Authorization'] = 'Bearer $token';
-        }
-        handler.next(options);
-      },
-    ));
+    final dio = Dio(
+      BaseOptions(
+        baseUrl: base,
+        connectTimeout: const Duration(seconds: 15),
+        receiveTimeout: const Duration(seconds: 15),
+      ),
+    );
+    dio.interceptors.add(
+      InterceptorsWrapper(
+        onRequest: (options, handler) async {
+          final token = await _storage.read(key: 'accessToken');
+          if (token != null) {
+            options.headers['Authorization'] = 'Bearer $token';
+          }
+          handler.next(options);
+        },
+      ),
+    );
     return dio;
   }
 

@@ -11,7 +11,7 @@ import 'screens/reset_password_screen.dart';
 import 'theme/theme.dart';
 
 final _router = GoRouter(
-  initialLocation: '/login',
+  initialLocation: '/forgot-password',
   routes: [
     GoRoute(path: '/login', builder: (_, __) => const LoginScreen()),
     GoRoute(path: '/register', builder: (_, __) => const RegisterScreen()),

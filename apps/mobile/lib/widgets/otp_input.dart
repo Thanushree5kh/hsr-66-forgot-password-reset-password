@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import '../theme/theme.dart';
 
 class OtpInputWidget extends StatefulWidget {
   const OtpInputWidget({
@@ -108,9 +109,11 @@ class OtpInputWidgetState extends State<OtpInputWidget> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: List.generate(_otpLength, (index) {
+        final isFilled = _controllers[index].text.isNotEmpty;
+
         return SizedBox(
-          width: 48,
-          height: 56,
+          width: 46,
+          height: 46,
           child: KeyboardListener(
             focusNode: FocusNode(),
             onKeyEvent: (event) {
@@ -128,8 +131,10 @@ class OtpInputWidgetState extends State<OtpInputWidget> {
               focusNode: _focusNodes[index],
               keyboardType: TextInputType.number,
               textAlign: TextAlign.center,
-              style: theme.textTheme.titleLarge?.copyWith(
+              style: theme.textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.bold,
+                fontSize: 18,
+                color: AppColors.textPrimary,
               ),
               inputFormatters: [
                 LengthLimitingTextInputFormatter(6),
@@ -139,23 +144,27 @@ class OtpInputWidgetState extends State<OtpInputWidget> {
                 contentPadding: EdgeInsets.zero,
                 counterText: '',
                 border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(23),
+                  borderSide: const BorderSide(color: AppColors.border, width: 1.5),
                 ),
                 enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(23),
                   borderSide: BorderSide(
-                    color: theme.colorScheme.outlineVariant,
+                    color: isFilled ? AppColors.softBlue : AppColors.inputBorder,
+                    width: isFilled ? 1.8 : 1.3,
                   ),
                 ),
                 focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(
-                    color: theme.colorScheme.primary,
-                    width: 2,
+                  borderRadius: BorderRadius.circular(23),
+                  borderSide: const BorderSide(
+                    color: AppColors.softBlue,
+                    width: 2.0,
                   ),
                 ),
                 filled: true,
-                fillColor: theme.colorScheme.surfaceContainerHighest.withAlpha(80),
+                fillColor: isFilled
+                    ? const Color(0xFFEBF3FC)
+                    : Colors.white,
               ),
               onChanged: (val) => _onTextChanged(index, val),
             ),

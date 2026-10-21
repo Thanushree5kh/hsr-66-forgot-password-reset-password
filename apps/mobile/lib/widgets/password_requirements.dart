@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/password_reset_models.dart';
+import '../theme/theme.dart';
 
 class PasswordRequirementsWidget extends StatelessWidget {
   const PasswordRequirementsWidget({
@@ -18,12 +19,13 @@ class PasswordRequirementsWidget extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: const EdgeInsets.only(bottom: 8),
+          padding: const EdgeInsets.only(bottom: 10),
           child: Text(
             'Password Requirements:',
             style: theme.textTheme.labelMedium?.copyWith(
               fontWeight: FontWeight.w600,
-              color: theme.colorScheme.onSurfaceVariant,
+              color: AppColors.textPrimary,
+              fontSize: 13,
             ),
           ),
         ),
@@ -31,22 +33,22 @@ class PasswordRequirementsWidget extends StatelessWidget {
           label: 'At least 8 characters',
           isSatisfied: criteria.hasMinLength,
         ),
-        const SizedBox(height: 6),
+        const SizedBox(height: 8),
         _RequirementItem(
           label: 'One uppercase letter (A-Z)',
           isSatisfied: criteria.hasUppercase,
         ),
-        const SizedBox(height: 6),
+        const SizedBox(height: 8),
         _RequirementItem(
           label: 'One lowercase letter (a-z)',
           isSatisfied: criteria.hasLowercase,
         ),
-        const SizedBox(height: 6),
+        const SizedBox(height: 8),
         _RequirementItem(
           label: 'One number (0-9)',
           isSatisfied: criteria.hasNumber,
         ),
-        const SizedBox(height: 6),
+        const SizedBox(height: 8),
         _RequirementItem(
           label: 'One special character (!@#\$%^&*...)',
           isSatisfied: criteria.hasSpecialChar,
@@ -68,31 +70,34 @@ class _RequirementItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final greenColor = Colors.green.shade600;
-    final inactiveColor = theme.colorScheme.onSurfaceVariant.withAlpha(128);
+    const satisfiedColor = Color(0xFF2E7D32);
+    const inactiveColor = Color(0xFF9CA3AF);
 
-    return Row(
-      children: [
-        Icon(
-          isSatisfied
-              ? Icons.check_circle_rounded
-              : Icons.radio_button_unchecked_rounded,
-          size: 18,
-          color: isSatisfied ? greenColor : inactiveColor,
-        ),
-        const SizedBox(width: 8),
-        Expanded(
-          child: Text(
-            label,
-            style: theme.textTheme.bodyMedium?.copyWith(
-              color: isSatisfied
-                  ? theme.colorScheme.onSurface
-                  : inactiveColor,
-              fontWeight: isSatisfied ? FontWeight.w500 : FontWeight.normal,
+    return AnimatedDefaultTextStyle(
+      duration: const Duration(milliseconds: 200),
+      style: theme.textTheme.bodyMedium!.copyWith(
+        color: isSatisfied ? AppColors.textPrimary : inactiveColor,
+        fontWeight: isSatisfied ? FontWeight.w500 : FontWeight.normal,
+        fontSize: 13.5,
+      ),
+      child: Row(
+        children: [
+          AnimatedContainer(
+            duration: const Duration(milliseconds: 200),
+            child: Icon(
+              isSatisfied
+                  ? Icons.check_circle_rounded
+                  : Icons.radio_button_unchecked_rounded,
+              size: 18,
+              color: isSatisfied ? satisfiedColor : inactiveColor,
             ),
           ),
-        ),
-      ],
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(label),
+          ),
+        ],
+      ),
     );
   }
 }

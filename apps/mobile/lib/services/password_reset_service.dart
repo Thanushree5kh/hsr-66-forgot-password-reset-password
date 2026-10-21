@@ -129,6 +129,7 @@ class MockPasswordResetRepository implements PasswordResetRepository {
   MockPasswordResetRepository({this.simulatedDelay = const Duration(milliseconds: 600)});
 
   final Duration simulatedDelay;
+  static const String demoOtp = '123456';
 
   @override
   Future<void> sendOtp(String email) async {
@@ -144,8 +145,9 @@ class MockPasswordResetRepository implements PasswordResetRepository {
     if (otp == '000000') {
       throw const PasswordResetException('OTP has expired. Please request a new one.');
     }
-    if (otp.length != 6 || otp == '999999') {
-      throw const PasswordResetException('Invalid OTP. Please check the code and try again.');
+    // Strictly verify that the entered OTP matches the demo OTP (123456)
+    if (otp != demoOtp) {
+      throw const PasswordResetException('Invalid OTP. Please enter the exact code shown in the demo tip.');
     }
     return 'mock_reset_token_${DateTime.now().millisecondsSinceEpoch}';
   }
