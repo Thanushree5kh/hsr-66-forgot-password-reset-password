@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../providers/locale_provider.dart';
 import '../providers/password_reset_provider.dart';
 import '../theme/theme.dart';
+import '../widgets/flowing_background.dart';
+import '../widgets/language_selector_pill.dart';
 import '../widgets/otp_input.dart';
 
 class OtpVerificationScreen extends ConsumerStatefulWidget {
@@ -38,8 +41,9 @@ class _OtpVerificationScreenState extends ConsumerState<OtpVerificationScreen> {
       if (success) {
         context.push('/reset-password');
       } else {
+        final strings = ref.read(stringsProvider);
         final errorMsg = ref.read(passwordResetProvider).errorMessage ??
-            'Invalid OTP. Please check the code and try again.';
+            strings.invalidOtpError;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(errorMsg),
@@ -55,21 +59,22 @@ class _OtpVerificationScreenState extends ConsumerState<OtpVerificationScreen> {
     final success = await ref.read(passwordResetProvider.notifier).resendOtp();
 
     if (mounted) {
+      final strings = ref.read(stringsProvider);
       if (success) {
         _otpKey.currentState?.clear();
         setState(() {
           _otp = '';
         });
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Demo OTP: 123456 (Check the tip card below)'),
+          SnackBar(
+            content: Text(strings.demoOtpBanner),
             backgroundColor: AppColors.primary,
             behavior: SnackBarBehavior.floating,
           ),
         );
       } else {
         final errorMsg = ref.read(passwordResetProvider).errorMessage ??
-            'Failed to resend OTP. Please try again.';
+            strings.failedToResendOtp;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(errorMsg),
@@ -92,127 +97,145 @@ class _OtpVerificationScreenState extends ConsumerState<OtpVerificationScreen> {
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(passwordResetProvider);
+    final strings = ref.watch(stringsProvider);
     final isLoading = state.isLoading;
-    final email = state.email.isNotEmpty ? state.email : 'your email';
+    final email = state.email.isNotEmpty ? state.email : strings.yourEmailFallback;
     final maskedEmail = _maskEmail(email);
 
     return Scaffold(
       backgroundColor: AppColors.background,
-      body: SafeArea(
-        child: Column(
-          children: [
-            // Top Bar: Back to Login
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-              child: Row(
-                children: [
-                  InkWell(
-                    borderRadius: BorderRadius.circular(12),
-                    onTap: _handleBack,
-                    child: const Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 6, vertical: 6),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(
-                            Icons.arrow_back_rounded,
-                            size: 20,
-                            color: AppColors.textPrimary,
-                          ),
-                          SizedBox(width: 6),
-                          Text(
-                            'Back to Login',
-                            style: TextStyle(
-                              color: AppColors.textPrimary,
-                              fontWeight: FontWeight.w600,
-                              fontSize: 14,
+      body: FlowingWaveBackground(
+        child: SafeArea(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: Center(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 480),
+                child: Column(
+                  children: [
+                    // Top Bar: Back to Login (Left) & Language Selector Pill (Right)
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        InkWell(
+                          borderRadius: BorderRadius.circular(12),
+                          onTap: _handleBack,
+                          child: Container(
+                            padding: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              color: Colors.white.withAlpha(45),
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(
+                                color: Colors.white.withAlpha(60),
+                                width: 1,
+                              ),
                             ),
+                            child: const Icon(
+                              Icons.arrow_back_rounded,
+                              size: 22,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                        const LanguageSelectorPill(isLight: true),
+                      ],
+                    ),
+                    const SizedBox(height: 14),
+
+                    // Header: Floating Squircle Badge + Title + Subtitle
+                    Container(
+                      width: 76,
+                      height: 76,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(22),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withAlpha(30),
+                            blurRadius: 18,
+                            offset: const Offset(0, 6),
+                          ),
+                          BoxShadow(
+                            color: AppColors.royalBlue.withAlpha(40),
+                            blurRadius: 24,
+                            spreadRadius: 2,
                           ),
                         ],
                       ),
+                      child: const Center(
+                        child: Icon(
+                          Icons.mark_email_read_rounded,
+                          color: AppColors.royalBlue,
+                          size: 40,
+                        ),
+                      ),
                     ),
-                  ),
-                ],
-              ),
-            ),
+                    const SizedBox(height: 14),
 
-            Expanded(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 6),
-                child: Center(
-                  child: ConstrainedBox(
-                    constraints: const BoxConstraints(maxWidth: 440),
-                    child: Container(
+                    // Title
+                    Text(
+                      strings.verifyOtpTitle,
+                      style: const TextStyle(
+                        fontSize: 26,
+                        fontWeight: FontWeight.w800,
+                        color: Colors.white,
+                        letterSpacing: -0.4,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 8),
+
+                    // Subtitle with highlighted email
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: RichText(
+                        textAlign: TextAlign.center,
+                        text: TextSpan(
+                          style: const TextStyle(
+                            fontSize: 14,
+                            color: Color(0xFFE1F5FE),
+                            height: 1.4,
+                          ),
+                          children: [
+                            TextSpan(
+                              text: strings.verifyOtpSubtitlePrefix,
+                            ),
+                            TextSpan(
+                              text: maskedEmail,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+
+                    // Elevated Floating White Card
+                    Container(
                       decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(28),
-                        border: Border.all(
-                          color: const Color(0xFFE2EAF5),
-                          width: 1.2,
-                        ),
                         boxShadow: [
+                          const BoxShadow(
+                            color: Color(0x180D47A1),
+                            blurRadius: 30,
+                            offset: Offset(0, 12),
+                          ),
                           BoxShadow(
-                            color: const Color(0xFF1E2640).withAlpha(14),
-                            blurRadius: 24,
-                            offset: const Offset(0, 8),
+                            color: Colors.black.withAlpha(12),
+                            blurRadius: 10,
+                            offset: const Offset(0, 4),
                           ),
                         ],
                       ),
-                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 22),
+                      padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 24),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
-                          const SizedBox(height: 6),
-
-                          // Title (Left-aligned matching other application pages)
-                          const Text(
-                            'Verify OTP',
-                            style: TextStyle(
-                              fontSize: 26,
-                              fontWeight: FontWeight.w900,
-                              color: AppColors.textPrimary,
-                              letterSpacing: -0.5,
-                            ),
-                          ),
-                          const SizedBox(height: 6),
-
-                          // Coral Red Accent Underline Bar
-                          Align(
-                            alignment: Alignment.centerLeft,
-                            child: Container(
-                              width: 44,
-                              height: 4,
-                              decoration: BoxDecoration(
-                                color: AppColors.primary,
-                                borderRadius: BorderRadius.circular(2),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(height: 12),
-
-                          // Subtitle with highlighted email
-                          RichText(
-                            text: TextSpan(
-                              style: const TextStyle(
-                                fontSize: 14.5,
-                                color: AppColors.textSecondary,
-                                height: 1.5,
-                              ),
-                              children: [
-                                const TextSpan(
-                                  text: 'Enter the 6-digit verification code sent to\n',
-                                ),
-                                TextSpan(
-                                  text: maskedEmail,
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    color: AppColors.textPrimary,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          const SizedBox(height: 28),
+                          const SizedBox(height: 8),
 
                           // OTP 6-circle input
                           Center(
@@ -241,9 +264,9 @@ class _OtpVerificationScreenState extends ConsumerState<OtpVerificationScreen> {
                             alignment: WrapAlignment.center,
                             crossAxisAlignment: WrapCrossAlignment.center,
                             children: [
-                              const Text(
-                                "Didn't receive the code? ",
-                                style: TextStyle(
+                              Text(
+                                strings.didntReceiveCode,
+                                style: const TextStyle(
                                   color: AppColors.textSecondary,
                                   fontSize: 14,
                                 ),
@@ -251,20 +274,20 @@ class _OtpVerificationScreenState extends ConsumerState<OtpVerificationScreen> {
                               if (state.isResendActive)
                                 TextButton(
                                   onPressed: isLoading ? null : _handleResendOtp,
-                                  child: const Text(
-                                    'Resend OTP',
-                                    style: TextStyle(
+                                  child: Text(
+                                    strings.resendOtp,
+                                    style: const TextStyle(
                                       fontWeight: FontWeight.bold,
-                                      color: AppColors.primary,
+                                      color: AppColors.royalBlue,
                                     ),
                                   ),
                                 )
                               else
                                 Text(
-                                  'Resend in ${state.resendCountdown}s',
+                                  strings.resendInSeconds(state.resendCountdown),
                                   style: const TextStyle(
                                     fontWeight: FontWeight.w600,
-                                    color: AppColors.primary,
+                                    color: AppColors.royalBlue,
                                   ),
                                 ),
                             ],
@@ -279,7 +302,7 @@ class _OtpVerificationScreenState extends ConsumerState<OtpVerificationScreen> {
                               boxShadow: (_otp.length == 6 && !isLoading)
                                   ? [
                                       BoxShadow(
-                                        color: AppColors.primary.withAlpha(90),
+                                        color: AppColors.royalBlue.withAlpha(85),
                                         blurRadius: 14,
                                         offset: const Offset(0, 5),
                                       ),
@@ -291,9 +314,9 @@ class _OtpVerificationScreenState extends ConsumerState<OtpVerificationScreen> {
                                   ? _handleVerifyOtp
                                   : null,
                               style: FilledButton.styleFrom(
-                                backgroundColor: AppColors.primary,
+                                backgroundColor: AppColors.royalBlue,
                                 foregroundColor: Colors.white,
-                                disabledBackgroundColor: AppColors.primary.withAlpha(90),
+                                disabledBackgroundColor: AppColors.royalBlue.withAlpha(90),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(28),
                                 ),
@@ -308,18 +331,18 @@ class _OtpVerificationScreenState extends ConsumerState<OtpVerificationScreen> {
                                         color: Colors.white,
                                       ),
                                     )
-                                  : const Row(
+                                  : Row(
                                       mainAxisAlignment: MainAxisAlignment.center,
                                       children: [
                                         Text(
-                                          'Verify OTP',
-                                          style: TextStyle(
+                                          strings.verifyOtpButton,
+                                          style: const TextStyle(
                                             fontSize: 16,
                                             fontWeight: FontWeight.w600,
                                           ),
                                         ),
-                                        SizedBox(width: 8),
-                                        Icon(
+                                        const SizedBox(width: 8),
+                                        const Icon(
                                           Icons.arrow_forward_rounded,
                                           size: 20,
                                         ),
@@ -327,7 +350,7 @@ class _OtpVerificationScreenState extends ConsumerState<OtpVerificationScreen> {
                                     ),
                             ),
                           ),
-                          const SizedBox(height: 22),
+                          const SizedBox(height: 20),
 
                           // Tip Card matching the design with Demo Mode info
                           Container(
@@ -352,9 +375,9 @@ class _OtpVerificationScreenState extends ConsumerState<OtpVerificationScreen> {
                                   child: Column(
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
-                                      const Text(
-                                        'Tip (Demo Mode)',
-                                        style: TextStyle(
+                                      Text(
+                                        strings.tipDemoModeTitle,
+                                        style: const TextStyle(
                                           fontWeight: FontWeight.bold,
                                           color: AppColors.textPrimary,
                                           fontSize: 14,
@@ -362,22 +385,21 @@ class _OtpVerificationScreenState extends ConsumerState<OtpVerificationScreen> {
                                       ),
                                       const SizedBox(height: 4),
                                       RichText(
-                                        text: const TextSpan(
-                                          style: TextStyle(
+                                        text: TextSpan(
+                                          style: const TextStyle(
                                             fontSize: 13,
                                             color: AppColors.textSecondary,
                                             height: 1.4,
                                           ),
                                           children: [
                                             TextSpan(
-                                              text:
-                                                  'Check your spam folder if needed. For testing before backend deployment, use Demo OTP: ',
+                                              text: strings.tipDemoModeTextPrefix,
                                             ),
-                                            TextSpan(
+                                            const TextSpan(
                                               text: '123456',
                                               style: TextStyle(
                                                 fontWeight: FontWeight.bold,
-                                                color: AppColors.primary,
+                                                color: AppColors.royalBlue,
                                               ),
                                             ),
                                           ],
@@ -389,15 +411,15 @@ class _OtpVerificationScreenState extends ConsumerState<OtpVerificationScreen> {
                               ],
                             ),
                           ),
-                          const SizedBox(height: 10),
                         ],
                       ),
                     ),
-                  ),
+                    const SizedBox(height: 24),
+                  ],
                 ),
               ),
             ),
-          ],
+          ),
         ),
       ),
     );

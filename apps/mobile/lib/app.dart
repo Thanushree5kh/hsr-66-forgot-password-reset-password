@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import 'providers/locale_provider.dart';
 import 'screens/dashboard_screen.dart';
 import 'screens/forgot_password_screen.dart';
 import 'screens/login_screen.dart';
@@ -23,14 +25,17 @@ final _router = GoRouter(
   ],
 );
 
-class NeetApp extends StatelessWidget {
+class NeetApp extends ConsumerWidget {
   const NeetApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final currentLocale = ref.watch(localeProvider);
+
     return MaterialApp.router(
       title: 'NEET Community',
       debugShowCheckedModeBanner: false,
+      locale: Locale(currentLocale),
       theme: buildLightTheme(),
       darkTheme: buildDarkTheme(),
       routerConfig: _router,

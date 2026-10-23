@@ -2,9 +2,11 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../providers/locale_provider.dart';
 import '../providers/password_reset_provider.dart';
 import '../theme/theme.dart';
 import '../widgets/flowing_background.dart';
+import '../widgets/language_selector_pill.dart';
 
 class PasswordResetSuccessScreen extends ConsumerStatefulWidget {
   const PasswordResetSuccessScreen({super.key});
@@ -55,62 +57,77 @@ class _PasswordResetSuccessScreenState
 
   @override
   Widget build(BuildContext context) {
+    final strings = ref.watch(stringsProvider);
+
     return Scaffold(
       backgroundColor: AppColors.background,
       body: FlowingWaveBackground(
         child: SafeArea(
-          child: Center(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-              child: AnimatedBuilder(
-                animation: Listenable.merge([_entranceController, _pulseController]),
-                builder: (context, _) {
-                  final entrance = _entranceController.value;
-                  final pulse = _pulseController.value;
+          child: Column(
+            children: [
+              // Top Bar with Language Selector
+              const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    LanguageSelectorPill(isLight: true),
+                  ],
+                ),
+              ),
+              Expanded(
+                child: Center(
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                    child: AnimatedBuilder(
+                      animation: Listenable.merge([_entranceController, _pulseController]),
+                      builder: (context, _) {
+                        final entrance = _entranceController.value;
+                        final pulse = _pulseController.value;
 
-                  // Pop-up bounce scale for the badge
-                  final badgeScale = Curves.elasticOut.transform(
-                    (entrance * 1.1).clamp(0.0, 1.0),
-                  );
+                        // Pop-up bounce scale for the badge
+                        final badgeScale = Curves.elasticOut.transform(
+                          (entrance * 1.1).clamp(0.0, 1.0),
+                        );
 
-                  // Card fade & slide
-                  final cardSlide = (1.0 - Curves.easeOutCubic.transform(entrance)) * 30.0;
-                  final cardOpacity = Curves.easeOut.transform(entrance);
+                        // Card fade & slide
+                        final cardSlide = (1.0 - Curves.easeOutCubic.transform(entrance)) * 30.0;
+                        final cardOpacity = Curves.easeOut.transform(entrance);
 
-                  return Transform.translate(
-                    offset: Offset(0, cardSlide),
-                    child: Opacity(
-                      opacity: cardOpacity,
-                      child: Container(
-                        constraints: const BoxConstraints(maxWidth: 420),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(28),
-                          border: Border.all(
-                            color: const Color(0xFFE2EAF5),
-                            width: 1.2,
-                          ),
-                          boxShadow: [
-                            BoxShadow(
-                              color: const Color(0xFF1E2640).withAlpha(16),
-                              blurRadius: 30,
-                              offset: const Offset(0, 10),
-                            ),
-                            BoxShadow(
-                              color: AppColors.primary.withAlpha((18 * entrance).toInt()),
-                              blurRadius: 36,
-                              offset: const Offset(0, 12),
-                            ),
-                          ],
-                        ),
-                        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            const SizedBox(height: 8),
+                        return Transform.translate(
+                          offset: Offset(0, cardSlide),
+                          child: Opacity(
+                            opacity: cardOpacity,
+                            child: Container(
+                              constraints: const BoxConstraints(maxWidth: 420),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(28),
+                                border: Border.all(
+                                  color: const Color(0xFFE2EAF5),
+                                  width: 1.2,
+                                ),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: const Color(0xFF1E2640).withAlpha(16),
+                                    blurRadius: 30,
+                                    offset: const Offset(0, 10),
+                                  ),
+                                  BoxShadow(
+                                    color: AppColors.primary.withAlpha((18 * entrance).toInt()),
+                                    blurRadius: 36,
+                                    offset: const Offset(0, 12),
+                                  ),
+                                ],
+                              ),
+                              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                children: [
+                                  const SizedBox(height: 8),
 
-                            // Celebratory Pop-Up Pink Checkmark Badge with Confetti
+                            // Celebratory Pop-Up Blue Checkmark Badge with Confetti
                             Center(
                               child: SizedBox(
                                 width: 140,
@@ -128,39 +145,39 @@ class _PasswordResetSuccessScreenState
                                       ),
                                     ),
 
-                                    // Ambient glowing pink halo
+                                    // Ambient glowing blue halo
                                     Transform.scale(
                                       scale: badgeScale,
                                       child: Stack(
                                         alignment: Alignment.center,
                                         children: [
-                                          // Outer soft pulse ring (Pink)
+                                          // Outer soft pulse ring (Ice Blue)
                                           Container(
                                             width: 114 + (pulse * 14),
                                             height: 114 + (pulse * 14),
                                             decoration: BoxDecoration(
                                               shape: BoxShape.circle,
-                                              color: const Color(0xFFFFEBE9).withAlpha(
+                                              color: const Color(0xFFE3F2FD).withAlpha(
                                                 (180 - (pulse * 100)).toInt(),
                                               ),
                                             ),
                                           ),
 
-                                          // Mid border ring (Pink)
+                                          // Mid border ring (Sky Blue)
                                           Container(
                                             width: 96,
                                             height: 96,
                                             decoration: BoxDecoration(
                                               shape: BoxShape.circle,
-                                              color: const Color(0xFFFFF0EE),
+                                              color: const Color(0xFFE8F4FD),
                                               border: Border.all(
-                                                color: const Color(0xFFFFC6BE),
+                                                color: const Color(0xFF90CAF9),
                                                 width: 2.0,
                                               ),
                                             ),
                                           ),
 
-                                          // Main Pink / Coral Gradient Circle with Checkmark
+                                          // Main Royal / Sky Blue Gradient Circle with Checkmark
                                           Container(
                                             width: 76,
                                             height: 76,
@@ -170,13 +187,13 @@ class _PasswordResetSuccessScreenState
                                                 begin: Alignment.topLeft,
                                                 end: Alignment.bottomRight,
                                                 colors: [
-                                                  Color(0xFFFF7E6B),
-                                                  Color(0xFFFF4848),
+                                                  Color(0xFF42A5F5),
+                                                  Color(0xFF1565C0),
                                                 ],
                                               ),
                                               boxShadow: [
                                                 BoxShadow(
-                                                  color: const Color(0xFFFF4848).withAlpha(100),
+                                                  color: const Color(0xFF1565C0).withAlpha(110),
                                                   blurRadius: 18,
                                                   spreadRadius: 2,
                                                   offset: const Offset(0, 6),
@@ -211,9 +228,9 @@ class _PasswordResetSuccessScreenState
                             const SizedBox(height: 22),
 
                             // 3. Title (Exact string expected by tests)
-                            const Text(
-                              'Password Reset Successful',
-                              style: TextStyle(
+                            Text(
+                              strings.passwordResetSuccessfulTitle,
+                              style: const TextStyle(
                                 fontSize: 24,
                                 fontWeight: FontWeight.w800,
                                 color: AppColors.textPrimary,
@@ -223,7 +240,7 @@ class _PasswordResetSuccessScreenState
                             ),
                             const SizedBox(height: 8),
 
-                            // 4. Coral Accent Bar
+                            // 4. Blue Accent Bar
                             Center(
                               child: Container(
                                 width: 44,
@@ -237,9 +254,9 @@ class _PasswordResetSuccessScreenState
                             const SizedBox(height: 12),
 
                             // 5. Subtitle
-                            const Text(
-                              'You can now log in with your new password.',
-                              style: TextStyle(
+                            Text(
+                              strings.passwordResetSuccessfulSubtitle,
+                              style: const TextStyle(
                                 fontSize: 15,
                                 color: AppColors.textSecondary,
                                 height: 1.45,
@@ -248,7 +265,7 @@ class _PasswordResetSuccessScreenState
                             ),
                             const SizedBox(height: 32),
 
-                            // Back to Login Button (Coral Red Pill)
+                            // Back to Login Button (Blue Pill)
                             Container(
                               height: 52,
                               decoration: BoxDecoration(
@@ -274,18 +291,18 @@ class _PasswordResetSuccessScreenState
                                   ),
                                   elevation: 0,
                                 ),
-                                child: const Row(
+                                child: Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     Text(
-                                      'Back to Login',
-                                      style: TextStyle(
+                                      strings.backToLogin,
+                                      style: const TextStyle(
                                         fontSize: 16,
                                         fontWeight: FontWeight.w600,
                                       ),
                                     ),
-                                    SizedBox(width: 8),
-                                    Icon(
+                                    const SizedBox(width: 8),
+                                    const Icon(
                                       Icons.arrow_forward_rounded,
                                       size: 20,
                                     ),
@@ -304,8 +321,11 @@ class _PasswordResetSuccessScreenState
             ),
           ),
         ),
-      ),
-    );
+      ],
+    ),
+  ),
+),
+);
   }
 }
 
@@ -331,12 +351,12 @@ class _CelebratoryBurstPainter extends CustomPainter {
     final burstDist = 52.0 + (16.0 * progress) + (3.0 * pulseValue);
 
     final colors = [
-      const Color(0xFFFF5252), // Pink / Coral
-      const Color(0xFFFFD166), // Gold
-      const Color(0xFF55C79E), // Mint
-      const Color(0xFF7E8DE0), // Periwinkle
-      const Color(0xFFFF7E6B), // Soft Coral
-      const Color(0xFFFFB347), // Amber
+      const Color(0xFF1565C0), // Royal Blue
+      const Color(0xFF29B6F6), // Cyan / Sky Blue
+      const Color(0xFF80D8FF), // Ice Blue
+      const Color(0xFF42A5F5), // Light Sky Blue
+      const Color(0xFFFFD166), // Gold Sparkle
+      const Color(0xFF55C79E), // Mint Accent
     ];
 
     for (int i = 0; i < particleCount; i++) {

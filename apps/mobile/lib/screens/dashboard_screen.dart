@@ -1,49 +1,62 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../providers/locale_provider.dart';
+import '../widgets/language_selector_pill.dart';
 
-class DashboardScreen extends StatelessWidget {
+class DashboardScreen extends ConsumerWidget {
   const DashboardScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final strings = ref.watch(stringsProvider);
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('NEET Community'),
-        actions: [IconButton(onPressed: () {}, icon: const Icon(Icons.notifications_outlined))],
+        title: Text(strings.neetCommunity),
+        actions: const [
+          Padding(
+            padding: EdgeInsets.only(right: 8),
+            child: Center(
+              child: LanguageSelectorPill(isLight: false),
+            ),
+          ),
+          SizedBox(width: 4),
+        ],
       ),
       body: ListView(
         padding: const EdgeInsets.all(16),
-        children: const [
+        children: [
           Row(
             children: [
-              Expanded(child: _StatCard(label: 'Streak', value: '0 days')),
-              SizedBox(width: 12),
-              Expanded(child: _StatCard(label: 'AI doubts left', value: '5 / 5')),
+              Expanded(child: _StatCard(label: strings.streakLabel, value: strings.zeroDays)),
+              const SizedBox(width: 12),
+              Expanded(child: _StatCard(label: strings.aiDoubtsLeftLabel, value: strings.doubtsCount)),
             ],
           ),
-          SizedBox(height: 12),
+          const SizedBox(height: 12),
           Card(
             child: ListTile(
-              leading: Icon(Icons.quiz_outlined),
-              title: Text("Today's Quiz"),
-              subtitle: Text('Placeholder — daily quiz will appear here (NEET-19).'),
+              leading: const Icon(Icons.quiz_outlined),
+              title: Text(strings.todaysQuizTitle),
+              subtitle: Text(strings.todaysQuizSubtitle),
             ),
           ),
           Card(
             child: ListTile(
-              leading: Icon(Icons.trending_up),
-              title: Text('Weak topics'),
-              subtitle: Text('Kinematics · Genetics · Thermodynamics'),
+              leading: const Icon(Icons.trending_up),
+              title: Text(strings.weakTopicsTitle),
+              subtitle: Text(strings.weakTopicsSubtitle),
             ),
           ),
         ],
       ),
       bottomNavigationBar: NavigationBar(
         selectedIndex: 0,
-        destinations: const [
-          NavigationDestination(icon: Icon(Icons.dashboard_outlined), label: 'Home'),
-          NavigationDestination(icon: Icon(Icons.quiz_outlined), label: 'Quizzes'),
-          NavigationDestination(icon: Icon(Icons.emoji_events_outlined), label: 'Leaderboard'),
-          NavigationDestination(icon: Icon(Icons.smart_toy_outlined), label: 'AI Doubt'),
+        destinations: [
+          NavigationDestination(icon: const Icon(Icons.dashboard_outlined), label: strings.navHome),
+          NavigationDestination(icon: const Icon(Icons.quiz_outlined), label: strings.navQuizzes),
+          NavigationDestination(icon: const Icon(Icons.emoji_events_outlined), label: strings.navLeaderboard),
+          NavigationDestination(icon: const Icon(Icons.smart_toy_outlined), label: strings.navAiDoubt),
         ],
       ),
     );

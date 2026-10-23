@@ -1,23 +1,27 @@
 import 'package:flutter/material.dart';
 
-/// Design system color palette extracted directly from the new illustration:
-/// - Primary: #EB5757 (Vibrant Coral Red — buttons, accent bars, key)
+/// Design system color palette:
+/// - Primary: #1565C0 (Royal Blue — buttons, active accents, focus)
+/// - Royal Blue: #1565C0
+/// - Sky Blue: #1976D2
+/// - Light Sky Blue: #42A5F5
+/// - Ice Blue: #80D8FF
 /// - Brand Green: #0F4735 (Deep Forest Green — NEET text & ECG heartbeat wave)
 /// - Mint Green: #7ED9B5 (Soft Mint for cross, botanical leaves)
 /// - Periwinkle Blue: #6B72B8 (Character shirt & doodle accents)
-/// - Soft Blue: #5B73DF (Input mail icon & active focus borders)
+/// - Soft Blue: #1976D2 (Active focus borders & icons)
 /// - Doodle Light Blue: #A4B6D8 (Floating atom, book outlines, dashed lines)
 /// - Background: #F0F5FA (Clean, calm soft sky/periwinkle backdrop)
 /// - Surface: #FFFFFF (Pure White card)
 /// - Text Primary: #1E2640 (Deep Navy / Charcoal)
 /// - Text Secondary: #677489 (Muted Cool Slate)
 class AppColors {
-  static const primary = Color(0xFFEB5757); // Coral Red
-  static const primaryHover = Color(0xFFD64545);
+  static const primary = Color(0xFF1565C0); // Royal Blue
+  static const primaryHover = Color(0xFF0D47A1); // Deep Navy Blue
   static const brandGreen = Color(0xFF0F4735); // Deep Forest Green
   static const mintGreen = Color(0xFF7ED9B5); // Soft Mint
   static const periwinkle = Color(0xFF6B72B8);
-  static const softBlue = Color(0xFF5B73DF);
+  static const softBlue = Color(0xFF1976D2);
   static const doodleBlue = Color(0xFFA4B6D8);
   static const background = Color(0xFFF0F5FA);
   static const surface = Color(0xFFFFFFFF);
@@ -28,6 +32,12 @@ class AppColors {
   static const textPrimary = Color(0xFF1E2640);
   static const textSecondary = Color(0xFF677489);
   static const error = Color(0xFFDC2626);
+
+  // Blue Theme additions:
+  static const royalBlue = Color(0xFF1565C0);
+  static const skyBlue = Color(0xFF1976D2);
+  static const lightSkyBlue = Color(0xFF42A5F5);
+  static const iceBlue = Color(0xFF80D8FF);
 }
 
 ThemeData buildLightTheme() {
@@ -35,7 +45,7 @@ ThemeData buildLightTheme() {
     brightness: Brightness.light,
     primary: AppColors.primary,
     onPrimary: Colors.white,
-    primaryContainer: Color(0xFFFFECEC),
+    primaryContainer: Color(0xFFE3F2FD),
     onPrimaryContainer: AppColors.primary,
     secondary: AppColors.softBlue,
     onSecondary: Colors.white,

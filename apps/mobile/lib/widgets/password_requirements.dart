@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/password_reset_models.dart';
+import '../providers/locale_provider.dart';
 import '../theme/theme.dart';
 
-class PasswordRequirementsWidget extends StatelessWidget {
+class PasswordRequirementsWidget extends ConsumerWidget {
   const PasswordRequirementsWidget({
     super.key,
     required this.password,
@@ -11,9 +13,10 @@ class PasswordRequirementsWidget extends StatelessWidget {
   final String password;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final criteria = PasswordCriteria.validate(password);
     final theme = Theme.of(context);
+    final strings = ref.watch(stringsProvider);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -21,7 +24,7 @@ class PasswordRequirementsWidget extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.only(bottom: 10),
           child: Text(
-            'Password Requirements:',
+            strings.passwordMustContain,
             style: theme.textTheme.labelMedium?.copyWith(
               fontWeight: FontWeight.w600,
               color: AppColors.textPrimary,
@@ -30,27 +33,27 @@ class PasswordRequirementsWidget extends StatelessWidget {
           ),
         ),
         _RequirementItem(
-          label: 'At least 8 characters',
+          label: strings.reqMinLength,
           isSatisfied: criteria.hasMinLength,
         ),
         const SizedBox(height: 8),
         _RequirementItem(
-          label: 'One uppercase letter (A-Z)',
+          label: strings.reqUppercase,
           isSatisfied: criteria.hasUppercase,
         ),
         const SizedBox(height: 8),
         _RequirementItem(
-          label: 'One lowercase letter (a-z)',
+          label: strings.reqLowercase,
           isSatisfied: criteria.hasLowercase,
         ),
         const SizedBox(height: 8),
         _RequirementItem(
-          label: 'One number (0-9)',
+          label: strings.reqNumber,
           isSatisfied: criteria.hasNumber,
         ),
         const SizedBox(height: 8),
         _RequirementItem(
-          label: 'One special character (!@#\$%^&*...)',
+          label: strings.reqSpecialChar,
           isSatisfied: criteria.hasSpecialChar,
         ),
       ],
